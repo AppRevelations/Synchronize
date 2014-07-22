@@ -1,4 +1,4 @@
-package com.example.synchronize;
+package com.apprevelations.synchronize;
 
 import java.util.ArrayList;
 
