@@ -10,6 +10,9 @@ import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class BrowseFragment extends Fragment implements OnItemClickListener {
+	
+	String TAG = "BrowseFragment";
 	
 	OnFileSelectedListener mCallback;
 	
@@ -37,6 +42,7 @@ public class BrowseFragment extends Fragment implements OnItemClickListener {
 		// TODO Auto-generated method stub
 		
 		View v = inflater.inflate(R.layout.fragment_browse, container, false);
+		setHasOptionsMenu(true);
 		
 		lv = (ListView) v.findViewById(R.id.listView1);
 		tv = (TextView) v.findViewById(R.id.textView1);
@@ -199,14 +205,6 @@ public class BrowseFragment extends Fragment implements OnItemClickListener {
 		}
 		
 	}
-
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
 */
 	
 	// Container Activity must implement this interface
@@ -226,6 +224,27 @@ public class BrowseFragment extends Fragment implements OnItemClickListener {
             throw new ClassCastException(activity.toString()
                     + " must implement OnHeadlineSelectedListener");
         }
+    }
+    @Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		// TODO Auto-generated method stub
+		//super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.browse_frag_menu, menu);
+	}
+
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch(id){
+        	case R.id.action_settings :
+        		Toast.makeText(getActivity(), TAG, Toast.LENGTH_SHORT).show();
+        		return true;
+        		
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }
