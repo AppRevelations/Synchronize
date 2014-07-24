@@ -164,29 +164,7 @@ public class SelectedFilesFragment extends Fragment{
 			if(SERVERIP != null){
 				SERVERIP = getLocalIpAddress();
 				Toast.makeText(getActivity(), SERVERIP, Toast.LENGTH_SHORT).show();
-				try {
-					while (true) {
-						// listen for incoming clients
-						Socket client = serverSocket.accept();
-						Toast.makeText(getActivity(), "Connected", Toast.LENGTH_SHORT);
-						
-						OutputStream out = client.getOutputStream();
-						
-						FileInputStream in = new FileInputStream(Environment.getExternalStorageDirectory().getPath() + File.separatorChar + "com.mxtech.videoplayer.ad-1.apk");
-                        byte[] buffer = new byte[8192];
-                        int count;
-                        while ((count = in.read(buffer)) > 0) {
-                          out.write(buffer, 0, count);
-                          //pb.incrementProgressBy(8192);
-                        }
-                        Log.d("ClientActivity", "C: Sent.");
-                        in.close();
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					Toast.makeText(getActivity(), "Error : " + e.toString(), Toast.LENGTH_SHORT).show();
-					e.printStackTrace();
-				}
+				
 			} else {
 				cancel(true);
 			}
@@ -195,6 +173,29 @@ public class SelectedFilesFragment extends Fragment{
 		@Override
 		protected Boolean doInBackground(String... params) {
 			// TODO Auto-generated method stub
+			try {
+				while (true) {
+					// listen for incoming clients
+					Socket client = serverSocket.accept();
+					Toast.makeText(getActivity(), "Connected", Toast.LENGTH_SHORT);
+					
+					OutputStream out = client.getOutputStream();
+					
+					FileInputStream in = new FileInputStream(params[0]);
+                    byte[] buffer = new byte[8192];
+                    int count;
+                    while ((count = in.read(buffer)) > 0) {
+                      out.write(buffer, 0, count);
+                      //pb.incrementProgressBy(8192);
+                    }
+                    Log.d("ClientActivity", "C: Sent.");
+                    in.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				Toast.makeText(getActivity(), "Error : " + e.toString(), Toast.LENGTH_SHORT).show();
+				e.printStackTrace();
+			}
 			return null;
 		}
 
