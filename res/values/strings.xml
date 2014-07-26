@@ -3,6 +3,7 @@
 
     <string name="app_name">Synchronize</string>
     <string name="action_send_all">Send All</string>
+    <string name="action_stop_sending">Stop Sending</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
 
