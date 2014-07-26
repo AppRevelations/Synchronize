@@ -32,6 +32,8 @@
             <meta-data android:name="android.support.UI_OPTIONS"
                    android:value="splitActionBarWhenNarrow" />
         </activity>
+        <service android:name="com.apprevelations.synchronize.ServerService"></service>
+        <service android:name="com.apprevelations.synchronize.ReceiverService"></service>
     </application>
 
 </manifest>
