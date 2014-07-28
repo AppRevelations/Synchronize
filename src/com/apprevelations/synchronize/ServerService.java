@@ -27,8 +27,8 @@ public class ServerService extends Service{
 	private static final int SUCCESS = 10;
 	
 	public static final int SERVERPORT = 8080;
-	public static String SERVERIP = "10.0.2.15";
-	private ServerSocket serverSocket;
+	public static String SERVERIP = null;
+	private ServerSocket serverSocket = null;
 
 	@Override
 	public void onCreate() {
@@ -47,13 +47,15 @@ public class ServerService extends Service{
 			return ERROR_CODE_NO_FILE_PATH_SPECIFIED;
 		}
 		
-		if(SERVERIP != null){
-			SERVERIP = getLocalIpAddress();
-			Toast.makeText(getApplicationContext(), SERVERIP, Toast.LENGTH_SHORT).show();
+		SERVERIP = getLocalIpAddress();
+		
+		if(SERVERIP == null){
+			Toast.makeText(getApplicationContext(), "Not able to get Server Ip", Toast.LENGTH_SHORT).show();
 			
 		} else {
-			Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
 			try {
+				serverSocket = new ServerSocket(SERVERPORT);
+				Toast.makeText(getApplicationContext(), SERVERIP, Toast.LENGTH_SHORT).show();
 				while (true) {
 					// listen for incoming clients
 					Socket client = serverSocket.accept();
@@ -86,8 +88,11 @@ public class ServerService extends Service{
 		// TODO Auto-generated method stub
 		try {
             // make sure you close the socket upon exiting
-            serverSocket.close();
-            Toast.makeText(getApplicationContext(), "Closing Socket", Toast.LENGTH_SHORT).show();
+            if(serverSocket != null){
+            	serverSocket.close();
+            	Toast.makeText(getApplicationContext(), "Closing Socket", Toast.LENGTH_SHORT).show();
+            }
+            Toast.makeText(getApplicationContext(), "Service Stopped", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
         }
