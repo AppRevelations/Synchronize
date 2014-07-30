@@ -16,6 +16,7 @@
 
 package com.apprevelations.synchronize;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,7 +28,7 @@ import android.util.SparseArray;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity implements BrowseFragment.OnFileSelectedListener, SelectedFilesFragment.OnHeadlineSelectedListener {
+public class MainActivity extends ActionBarActivity implements BrowseFragment.OnFileSelectedListener, SelectedFilesFragment.StartServiceListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments representing
@@ -142,9 +143,22 @@ public class MainActivity extends ActionBarActivity implements BrowseFragment.On
         
     }
     
-    public void onArticleSelected(int position) {
-        // The user selected the headline of an article from the HeadlinesFragment
-        // Do something here to display that article
+    @Override
+    public void requestStartService(final Intent serviceIntent) {
+        
+    	new Thread(){
+        	
+        	@Override
+        	public void run(){
+        		startService(serviceIntent);
+        	}
+        	
+        }.start();
+    }
+    
+    @Override
+    public void requestStopService(Intent serviceIntent){
+    	stopService(serviceIntent);
     }
 
 	@Override
