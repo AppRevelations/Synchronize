@@ -17,6 +17,7 @@ import org.apache.http.conn.util.InetAddressUtils;
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -29,57 +30,31 @@ public class ServerService extends Service{
 	public static final int SERVERPORT = 8080;
 	public static String SERVERIP = null;
 	private ServerSocket serverSocket = null;
+	
+	private Boolean returnCode = false;
 
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
 	}
+	
+	private void setReturnCode(Boolean returnCode){
+		returnCode = false;
+	}
 
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
+	public int onStartCommand(final Intent intent, int flags, int startId) {	//will making intent final have any repercussions??
 		// TODO Auto-generated method stub
 		
-		Toast.makeText(getApplicationContext(), "Service started", Toast.LENGTH_SHORT).show();
+		new ServerSocketAsyncTask().execute(intent.getStringExtra("File Path"));
 		
-		String filePath = intent.getStringExtra("File Path");
-		if(filePath == null){
+		if(returnCode){
+			return SUCCESS;
+		} else {
 			return ERROR_CODE_NO_FILE_PATH_SPECIFIED;
 		}
 		
-		SERVERIP = getLocalIpAddress();
-		
-		if(SERVERIP == null){
-			Toast.makeText(getApplicationContext(), "Not able to get Server Ip", Toast.LENGTH_SHORT).show();
-			
-		} else {
-			try {
-				serverSocket = new ServerSocket(SERVERPORT);
-				Toast.makeText(getApplicationContext(), SERVERIP, Toast.LENGTH_SHORT).show();
-				while (true) {
-					// listen for incoming clients
-					Socket client = serverSocket.accept();
-					Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT);
-					
-					OutputStream out = client.getOutputStream();
-					
-					FileInputStream in = new FileInputStream(filePath);
-                    byte[] buffer = new byte[8192];
-                    int count;
-                    while ((count = in.read(buffer)) > 0) {
-                      out.write(buffer, 0, count);
-                      //pb.incrementProgressBy(8192);
-                    }
-                    Log.d("ClientActivity", "C: Sent.");
-                    in.close();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				Toast.makeText(getApplicationContext(), "Error : " + e.toString(), Toast.LENGTH_SHORT).show();
-				e.printStackTrace();
-			}
-		}
-		return SUCCESS;
 		//return super.onStartCommand(intent, flags, startId);
 	}
 
@@ -176,5 +151,96 @@ public class ServerService extends Service{
         }
         return null;
     }
+	
+	private class ServerSocketAsyncTask extends AsyncTask<String, String, Void> {
+
+		@Override
+		protected Void doInBackground(String... params) {
+			// TODO Auto-generated method stub
+			
+			publishProgress("Service started");
+			
+			//Toast.makeText(getApplicationContext(), "Service started", Toast.LENGTH_SHORT).show();
+			
+			String filePath = params[0];
+			if(filePath == null){
+				setReturnCode(false);
+			}
+			
+			SERVERIP = getLocalIpAddress();
+			
+			if(SERVERIP == null){
+				publishProgress("Not able to get Server Ip");
+				//Toast.makeText(getApplicationContext(), "Not able to get Server Ip", Toast.LENGTH_SHORT).show();
+				
+			} else {
+				try {
+					serverSocket = new ServerSocket(SERVERPORT);
+					publishProgress(SERVERIP);
+					//Toast.makeText(getApplicationContext(), SERVERIP, Toast.LENGTH_SHORT).show();
+					while (true) {
+						// listen for incoming clients
+						Socket client = serverSocket.accept();
+						publishProgress("Connected");
+						//Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT);
+						
+						OutputStream out = client.getOutputStream();
+						
+						FileInputStream in = new FileInputStream(filePath);
+	                    byte[] buffer = new byte[8192];
+	                    int count;
+	                    while ((count = in.read(buffer)) > 0) {
+	                      out.write(buffer, 0, count);
+	                      //pb.incrementProgressBy(8192);
+	                    }
+	                    Log.d("ClientActivity", "C: Sent.");
+	                    in.close();
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					publishProgress("Error : " + e.toString());
+					//Toast.makeText(getApplicationContext(), "Error : " + e.toString(), Toast.LENGTH_SHORT).show();
+					e.printStackTrace();
+				}
+			}
+			setReturnCode(true);
+			
+			return null;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+		}
+
+		@Override
+		protected void onProgressUpdate(String... values) {
+			// TODO Auto-generated method stub
+			
+			Toast.makeText(ServerService.this, values[0], Toast.LENGTH_SHORT).show();
+			
+			super.onProgressUpdate(values);
+		}
+
+/*		@Override
+		protected void onCancelled(Integer result) {
+			// TODO Auto-generated method stub
+			super.onCancelled(result);
+		}
+
+		@Override
+		protected void onCancelled() {
+			// TODO Auto-generated method stub
+			super.onCancelled();
+		}
+*/		
+	}
 
 }
