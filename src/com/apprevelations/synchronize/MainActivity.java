@@ -145,15 +145,7 @@ public class MainActivity extends ActionBarActivity implements BrowseFragment.On
     
     @Override
     public void requestStartService(final Intent serviceIntent) {
-        
-    	new Thread(){
-        	
-        	@Override
-        	public void run(){
-        		startService(serviceIntent);
-        	}
-        	
-        }.start();
+		startService(serviceIntent);
     }
     
     @Override
